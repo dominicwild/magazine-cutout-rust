@@ -8,9 +8,9 @@ pub fn can_construct_note(magazine: &[&str], note: &[&str]) -> bool {
     let mut magazine_word_counts = word_counts_of(magazine);
 
     for &word in note {
-        match magazine_word_counts.get(word) {
-            None | Some(0) => return false,
-            Some(count) => magazine_word_counts.insert(word, count - 1),
+        match magazine_word_counts.entry(word).or_insert(0) {
+            0 => return false,
+            count => *count -= 1,
         };
     }
 
@@ -21,10 +21,7 @@ fn word_counts_of<'a>(magazine: &[&'a str]) -> HashMap<&'a str, i32> {
     let mut word_counts = HashMap::new();
 
     for &word in magazine {
-        match word_counts.get(word) {
-            Some(word_count) => word_counts.insert(word, word_count + 1),
-            None => word_counts.insert(word, 1),
-        };
+        *word_counts.entry(word).or_insert(0) += 1;
     }
 
     word_counts
